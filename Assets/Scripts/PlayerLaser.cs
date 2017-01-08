@@ -38,4 +38,15 @@ public class PlayerLaser : MonoBehaviour {
             Destroy(gameObject);
         }
 	}
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        /* If laser collides with anything other 
+         * than player ship object (initial position), 
+         * then destroy object                          */ 
+        if( collider.tag != "PlayerShip")
+        {
+            DestroyObject(gameObject);
+        }
+    }
 }

@@ -35,4 +35,12 @@ public class PlayerMovement : MonoBehaviour {
     {
         return (transform.position);
     }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.tag == "Asteroid")
+        {
+            DestroyObject(gameObject);
+        }
+    }
 }
