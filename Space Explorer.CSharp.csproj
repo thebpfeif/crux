@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AsteroidCollision.cs" />
+    <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\ItemPhysics.cs" />
     <Compile Include="Assets\Scripts\PlayerLaser.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
