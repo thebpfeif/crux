@@ -33,4 +33,17 @@ public class AsteroidCollision : MonoBehaviour {
 
         }
     }
+
+    void OnCollisionEnter2D(Collision2D collider)
+    {
+        /* Get the collider velocity and mass it hit the astroid with */
+        //Vector2 collider_vel = collider.rigidbody.velocity;
+        //float mass = collider.rigidbody.mass;
+
+        //BRP TEMP 
+        //First let's just try adding an arbitrary force 
+        Vector2 force = new Vector2(10, 0);
+        gameObject.GetComponent<Rigidbody2D>().AddForce(force);
+
+    }
 }
