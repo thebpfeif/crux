@@ -18,6 +18,10 @@ public class PlayerMovement : MonoBehaviour {
         /* local variables */
         Vector2 impulse;
         Vector2 thrust;
+        float torque;
+
+        /* We don't apply an impulse along the horizontal, so zero it out */
+        impulse.x = 0; 
 
         /* get player input */ 
         float x = Input.GetAxisRaw("Horizontal");
@@ -33,11 +37,16 @@ public class PlayerMovement : MonoBehaviour {
 
         /* calculate the change in momentum (impulse) to be applied */
         /* momentum = mass * velocity */ 
-        impulse.x = ( thrust.x * Time.deltaTime );
         impulse.y = ( thrust.y * Time.deltaTime );
 
+        /* calculate the torque to be applied */ 
+        torque = ( thrust.x * Time.deltaTime );
+
         /* apply the impulse to the object */
-        rb2d.AddForce( impulse );
+        rb2d.AddRelativeForce( impulse );
+
+        /* apply torque to the object */ 
+        rb2d.AddTorque( torque );
 	}
 
     public Vector2 getPosition()
