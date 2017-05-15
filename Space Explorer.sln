@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Space Explorer.CSharp", "Space Explorer.CSharp.csproj", "{46CF0FB5-64C4-7837-92AB-DE09C9A4C39A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Space Explorer", "Space Explorer.csproj", "{8528798F-091A-7BA6-9636-04DEFBF198DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{46CF0FB5-64C4-7837-92AB-DE09C9A4C39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46CF0FB5-64C4-7837-92AB-DE09C9A4C39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46CF0FB5-64C4-7837-92AB-DE09C9A4C39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46CF0FB5-64C4-7837-92AB-DE09C9A4C39A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8528798F-091A-7BA6-9636-04DEFBF198DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8528798F-091A-7BA6-9636-04DEFBF198DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8528798F-091A-7BA6-9636-04DEFBF198DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8528798F-091A-7BA6-9636-04DEFBF198DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

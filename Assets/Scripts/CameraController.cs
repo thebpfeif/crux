@@ -17,6 +17,6 @@ public class CameraController : MonoBehaviour {
     // items have been processed in Update() 
 	void LateUpdate ()
     {
-        transform.position = player.transform.position + offset; 
+        //transform.position = player.transform.position + offset; 
 	}
 }
