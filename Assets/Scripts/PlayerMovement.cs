@@ -3,7 +3,8 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
-    public Vector2 accel; 
+    public float RotateVelocity;
+    public float ForwardVelocity;  
 
     private Rigidbody2D rb2d;
 
@@ -30,24 +31,13 @@ public class PlayerMovement : MonoBehaviour {
         /* normalize since we only care about direction, not length */ 
         Vector2 direction = new Vector2(x, y).normalized;
 
-        /* calculate the thrust                     */
-        /* Thrust = mass * acceleration * direction */
-        thrust.x = ( direction.x * rb2d.mass * accel.x );
-        thrust.y = ( direction.y * rb2d.mass * accel.y );
+        transform.Rotate(0, 0, direction.x * RotateVelocity);
 
-        /* calculate the change in momentum (impulse) to be applied */
-        /* momentum = mass * velocity */ 
-        impulse.y = ( thrust.y * Time.deltaTime );
-
-        /* calculate the torque to be applied */ 
-        torque = ( thrust.x * Time.deltaTime );
-
-        /* apply the impulse to the object */
-        rb2d.AddRelativeForce( impulse );
-
-        /* apply torque to the object */ 
-        rb2d.AddTorque( torque );
-	}
+        if( direction.y != 0 )
+        {
+        transform.position += transform.up * Time.deltaTime * ForwardVelocity * direction.y;
+        }
+    }
 
     public Vector2 getPosition()
     {
