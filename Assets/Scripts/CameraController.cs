@@ -17,6 +17,27 @@ public class CameraController : MonoBehaviour {
     // items have been processed in Update() 
 	void LateUpdate ()
     {
-        //transform.position = player.transform.position + offset; 
+        transform.position = player.transform.position + offset;
+
+        float y = Input.mouseScrollDelta.y;
+        zoomCamera(y);
 	}
+
+    void zoomCamera(float input)
+    {
+        if(input == 0)
+        {
+            return; 
+        }
+
+        else if(input >= 1)
+        {
+            Camera.main.orthographicSize += 1;     
+        }
+
+        else
+        {
+            Camera.main.orthographicSize -= 1; 
+        }
+    }
 }

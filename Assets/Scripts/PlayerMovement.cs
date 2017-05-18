@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour {
 
     public float RotateVelocity;
-    public float ForwardVelocity;  
+    public float forwardAccel;  
 
     private Rigidbody2D rb2d;
 
@@ -33,10 +33,19 @@ public class PlayerMovement : MonoBehaviour {
 
         transform.Rotate(0, 0, direction.x * RotateVelocity);
 
-        if( direction.y != 0 )
-        {
-        transform.position += transform.up * Time.deltaTime * ForwardVelocity * direction.y;
-        }
+        //transform.position += transform.up * Time.deltaTime * ForwardVelocity * direction.y;
+
+        /* calculate the thrust                     */
+        /* Thrust = mass * acceleration * direction */
+        thrust.y = (direction.y * rb2d.mass * forwardAccel);
+
+        /* calculate the change in momentum (impulse) to be applied */
+        /* momentum = mass * velocity */
+        impulse.y = (thrust.y * Time.deltaTime);
+
+        /* apply the impulse to the object */
+        rb2d.AddRelativeForce(impulse);
+
     }
 
     public Vector2 getPosition()
