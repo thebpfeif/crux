@@ -25,6 +25,8 @@ public class CameraController : MonoBehaviour {
 
     void zoomCamera(float input)
     {
+        float currSize = Camera.main.orthographicSize; 
+
         if(input == 0)
         {
             return; 
@@ -32,12 +34,16 @@ public class CameraController : MonoBehaviour {
 
         else if(input >= 1)
         {
-            Camera.main.orthographicSize += 1;     
+            currSize -= 1;     
         }
 
         else
         {
-            Camera.main.orthographicSize -= 1; 
+            currSize += 1; 
         }
+
+        currSize = Mathf.Clamp(currSize, 0, 100);
+
+        Camera.main.orthographicSize = currSize; 
     }
 }
