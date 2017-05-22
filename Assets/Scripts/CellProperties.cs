@@ -9,6 +9,6 @@ public class CellProperties : MonoBehaviour {
     public Vector2 VertexTopLeft { get; set; }
     public Vector2 VertexTopRight { get; set;}
     public Vector2 CellCoordinates { get; set; }
-    public float AsteroidDenstiy { get; set; }
+    public int AsteroidDenstiy { get; set; }
 
 }

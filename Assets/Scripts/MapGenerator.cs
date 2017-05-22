@@ -9,7 +9,8 @@ public class MapGenerator : MonoBehaviour {
     public int MapHeight;           /* Map height, in cells         */ 
     public int MapWidth;            /* Map width, in cells          */
     private int cellLength = 100;   /* cell side length (square)    */ 
-    private List<GameObject> cells = new List<GameObject>(); 
+    private List<GameObject> cells = new List<GameObject>();
+                                    /* List of map cells            */ 
 
     // Use this for initialization
     void Start () {
@@ -26,19 +27,46 @@ public class MapGenerator : MonoBehaviour {
     private void generateAsteroids()
     {
         Vector2 asteroidPosition;
+        CellProperties properties; 
+        int occupancyCount; 
+        bool[,] cellOccupancy;
+
+        CircleCollider2D collider = Asteroid.GetComponent<CircleCollider2D>();
 
         foreach( GameObject cell in cells )
         {
             /* Get the cell position */
             Vector2 cellPosition = cell.transform.position;
 
-            /* primitive random placement */
-            /* Find a random x and y coordinate */
-            asteroidPosition.x = Random.Range(cellPosition.x, cellPosition.x + cellLength);
-            asteroidPosition.y = Random.Range(cellPosition.y, cellPosition.y + cellLength);
+            /* Get the cell properties */
+            properties = cell.GetComponent<CellProperties>();
 
-            GameObject newAsteroid = (GameObject)Instantiate(Asteroid);
-            newAsteroid.transform.position = asteroidPosition; 
+            /* Clear out the array */
+            cellOccupancy = new bool[cellLength, cellLength];
+            occupancyCount = 0;
+
+            while( occupancyCount <= properties.AsteroidDenstiy )
+            {
+                /* Keep looking for an empty space */ 
+                do
+                {
+                    /* Find a random, relative x and y coordinate */
+                    asteroidPosition.x = Random.Range(0, cellLength);
+                    asteroidPosition.y = Random.Range(0, cellLength);
+
+                } while (cellOccupancy[(int)asteroidPosition.x, (int)asteroidPosition.y] == true);
+
+                /* Mark the spot as occupied */
+                cellOccupancy[(int)asteroidPosition.x, (int)asteroidPosition.y] = true;
+                occupancyCount++;
+
+                /* instantiate and place the asteroid */ 
+                GameObject newAsteroid = (GameObject)Instantiate(Asteroid);
+                newAsteroid.transform.parent = cell.transform; 
+                newAsteroid.transform.localPosition = asteroidPosition;
+
+            }
+
 
         }
     }
@@ -58,6 +86,9 @@ public class MapGenerator : MonoBehaviour {
                 /* Set the cell coordinates in properties */
                 CellProperties properties = newCell.GetComponent<CellProperties>();
                 properties.CellCoordinates = coordinates;
+
+                /* Give it a random asteroid density (for now) */
+                properties.AsteroidDenstiy = Random.Range(0, 100);
 
                 /* Place the cell in the world space, save it to list */ 
                 newCell.transform.position = new Vector2(x * cellLength, y * cellLength);

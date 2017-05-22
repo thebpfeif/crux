@@ -25,7 +25,7 @@ public class AsteroidCollision : MonoBehaviour {
             /* Destroy asteroid */ 
             DestroyObject(gameObject);
 
-            /*Generate items for the player to pick up*/
+            /* Generate items for the player to pick up */
             GameObject item = (GameObject)Instantiate(ItemDropGO);
 
             /* Set item drop location equal to asteroid's position*/ 
