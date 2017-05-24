@@ -13,6 +13,7 @@ public class MapGenerator : MonoBehaviour {
     private int cellLength = 100;       /* cell side length (square)    */ 
     private List<GameObject> cells = new List<GameObject>();
                                         /* List of map cells            */ 
+    private bool[,] tracker;
 
     // Use this for initialization
     void Start () {
@@ -37,39 +38,25 @@ public class MapGenerator : MonoBehaviour {
 
         foreach( GameObject cell in cells )
         {
+            tracker = new bool[cellLength, cellLength];
             /* Get the cell position */
             Vector2 cellPosition = cell.transform.position;
 
             /* Get the cell properties */
             properties = cell.GetComponent<CellProperties>();
 
-            /* Clear out the array */
-            cellOccupancy = new bool[cellLength, cellLength];
-            occupancyCount = 0;
+            /* calculate the counts of each type of asteroid
+             * based on properties */
+            //BRP TEMP: Trying one type of asteroid each for now
 
-            while( occupancyCount <= properties.AsteroidDenstiy )
-            {
-                /* Keep looking for an empty space */ 
-                do
-                {
-                    /* Find a random, relative x and y coordinate */
-                    asteroidPosition.x = Random.Range(0, cellLength);
-                    asteroidPosition.y = Random.Range(0, cellLength);
+            /* populate with large asteroids first */
+            populateCell(cell, LargeAsteroid, 1);
 
-                } while (cellOccupancy[(int)asteroidPosition.x, (int)asteroidPosition.y] == true);
+            /* populate with medium asteroids */
+            populateCell(cell, MedAsteroid, 1);
 
-                /* Mark the spot as occupied */
-                cellOccupancy[(int)asteroidPosition.x, (int)asteroidPosition.y] = true;
-                occupancyCount++;
-
-                /* instantiate and place the asteroid */ 
-                //GameObject newAsteroid = (GameObject)Instantiate(Asteroid);
-                //newAsteroid.transform.parent = cell.transform; 
-                //newAsteroid.transform.localPosition = asteroidPosition;
-
-            }
-
-
+            /* small asteroids last */
+            populateCell(cell, SmallAsteroid, 1);
         }
     }
 
@@ -105,13 +92,21 @@ public class MapGenerator : MonoBehaviour {
         }
     }
 
-    private void populateCell( GameObject cell, GameObject item, bool[,] tracker, int count )
+    private void populateCell(GameObject cell, GameObject item, int count)
     {
         int iteration = 0;
+        int diameter; 
         Vector2 position;
         CircleCollider2D col = item.GetComponent<CircleCollider2D>();
         /* Get diameter of game object */
-        int diameter = Mathf.CeilToInt(col.radius) * 2; 
+        if(col.radius < 1.0f)
+        {
+            diameter = 1; 
+        }
+        else
+        {
+            diameter = Mathf.CeilToInt(col.radius) * 2; 
+        }
 
         while (iteration < count)
         {
@@ -122,10 +117,10 @@ public class MapGenerator : MonoBehaviour {
                 position.x = Random.Range(0, cellLength);
                 position.y = Random.Range(0, cellLength);
 
-            } while (!isSpaceFree(tracker, (int)position.x, (int)position.y, diameter));
+            } while (!isSpaceFree((int)position.x, (int)position.y, diameter));
 
             /* Mark the spot as occupied */
-            tracker[(int)position.x, (int)position.y] = true;
+            fillSpace((int)position.x, (int)position.y, diameter);
             iteration++; 
 
             /* instantiate and place the asteroid */
@@ -135,58 +130,40 @@ public class MapGenerator : MonoBehaviour {
         }
     }
 
-    private bool isSpaceFree( bool[,] buffer, int pos_x, int pos_y, int diameter )
+    private bool isSpaceFree(int pos_x, int pos_y, int diameter)
     {
-        if (diameter == 1 )
+        /* check bounds */ 
+        /* Note: this check assumes that the anchor position 
+         * is in the lower left corner  */ 
+        if(pos_x + (diameter - 1) >= cellLength || pos_y + (diameter - 1) >= cellLength)
         {
-            return buffer[pos_x, pos_y] == false;
-        }
-        else if( diameter == 2 )
-        {
-            /* check bounds */ 
-            /* Note: The lower left cell is always the anchor, 
-             * so we can assume we'll never fall out of bounds 
-             * below 0.                                      */
-            if( pos_x + 1 >= cellLength || pos_y + 1 >= cellLength )
-            {
-                return false; 
-            }
-
-            /* if any of the spaces are occupied, space unavailable */ 
-            else if( buffer[pos_x, pos_y] == true || buffer[pos_x + 1, pos_y] == true
-                || buffer[pos_x, pos_y + 1] == true || buffer[ pos_x + 1, pos_y + 1] == true )
-            {
-                return false;
-            }
-            else
-            {
-                return true; 
-            }
-        }
-        else if( diameter == 3 )
-        {
-            /* check bounds */ 
-            if( pos_x + 2 >= cellLength || pos_y + 2 >= cellLength )
-            {
-                return false; 
-            }
-
-            /* if any of the spaces are occupied, space unavailable */
-            else if (buffer[pos_x, pos_y] == true || buffer[pos_x + 1, pos_y] == true || buffer[pos_x + 2, pos_y]
-                || buffer[pos_x, pos_y + 1] == true || buffer[pos_x + 1, pos_y + 1] == true || buffer[pos_x + 2, pos_y + 1] == true 
-                || buffer[pos_x, pos_y + 2] == true || buffer[pos_x + 1, pos_y + 2] == true || buffer[pos_x + 2, pos_y + 2] == true )
-            {
-                return false; 
-            }
-            else
-            {
-                return true; 
-            }
-        }
-        else
-        {
-            Debug.Log("Diameter length not supported");
             return false; 
+        }
+
+        for(int i = 0; i < diameter; i++)
+        {
+            for(int j = 0; j < diameter; j++)
+            {
+                /* if cell is occupied, space unavailable */ 
+                if(tracker[pos_x + i, pos_y + j] == true)
+                {
+                    return false; 
+                }
+            }
+        }
+
+        /* space is available */
+        return true; 
+    }
+
+    private void fillSpace(int pos_x, int pos_y, int diameter)
+    {
+        for(int i = 0; i < diameter; i++)
+        {
+            for(int j = 0; j < diameter; j++)
+            {
+                tracker[pos_x + i, pos_y + j] = true; 
+            }
         }
     }
 

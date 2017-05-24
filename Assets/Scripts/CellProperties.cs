@@ -45,7 +45,7 @@ public class CellProperties : MonoBehaviour {
         }
         set
         {
-            LargeAsteroidPercent = value; 
+            MedAsteroidPercent = value; 
         }
     }
 
