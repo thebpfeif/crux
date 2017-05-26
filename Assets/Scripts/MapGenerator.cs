@@ -4,65 +4,71 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour {
 
-    public GameObject CellGO;           /* Cell Prefab                  */
-    public GameObject SmallAsteroid;    /* Small Asteroid Prefab        */
-    public GameObject MedAsteroid;      /* Medium Asteroid Prefab       */
-    public GameObject LargeAsteroid;    /* Large Asteroid Prefab        */ 
-    public int MapHeight;               /* Map height, in cells         */ 
-    public int MapWidth;                /* Map width, in cells          */
-    private int cellLength = 100;       /* cell side length (square)    */ 
-    private List<GameObject> cells = new List<GameObject>();
-                                        /* List of map cells            */ 
+    public  GameObject          CellGO;         /* Cell Prefab                  */
+    public  GameObject          LargeAsteroid;  /* Large Asteroid Prefab        */ 
+    public  GameObject          MedAsteroid;    /* Medium Asteroid Prefab       */
+    public  GameObject          SmallAsteroid;  /* Small Asteroid Prefab        */
+    public  int                 MapHeight;      /* Map height, in cells         */ 
+    public  int                 MapWidth;       /* Map width, in cells          */
+                                                /* cell side length (square)    */
+    private List<GameObject>    cells = new List<GameObject>();
+                                                /* List of map cells            */
     private bool[,] tracker;
+                                                /* tracks free space in cells   */
+    private int                 cellLength = 100;
+                                                /* length of each cell (square) */
 
-    // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         generateCells();
         generateAsteroids(); 
 
     }
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		
 	}
 
     private void generateAsteroids()
     {
-        Vector2 asteroidPosition;
-        CellProperties properties; 
-        int occupancyCount; 
-        bool[,] cellOccupancy;
-
-        //CircleCollider2D collider = Asteroid.GetComponent<CircleCollider2D>();
+        CellProperties properties;
+        int asteroidCount;
+        //BRP TODO: Calculate these at runtime
+        int largeAsteroidSize = 9; 
+        int medAsteroidSize = 4;
+        int smallAsteroidSize = 1;
 
         foreach( GameObject cell in cells )
         {
+            /* reset the tracker for new cell */ 
             tracker = new bool[cellLength, cellLength];
+
             /* Get the cell position */
             Vector2 cellPosition = cell.transform.position;
 
             /* Get the cell properties */
             properties = cell.GetComponent<CellProperties>();
 
-            /* calculate the counts of each type of asteroid
-             * based on properties */
-            //BRP TEMP: Trying one type of asteroid each for now
+            /* calculate the counts of each type of asteroid */ 
+            asteroidCount = Mathf.FloorToInt((properties.LargeAsteroidPercent * properties.AvailableCellCount) / largeAsteroidSize);
 
             /* populate with large asteroids first */
-            populateCell(cell, LargeAsteroid, 1);
+            populateCell(cell, LargeAsteroid, asteroidCount);
+            asteroidCount = Mathf.FloorToInt((properties.MedAsteroidPercent * properties.AvailableCellCount) / medAsteroidSize);
 
             /* populate with medium asteroids */
-            populateCell(cell, MedAsteroid, 1);
+            populateCell(cell, MedAsteroid, asteroidCount);
+            asteroidCount = Mathf.FloorToInt((properties.SmallAsteroidPercent * properties.AvailableCellCount) / smallAsteroidSize);
 
             /* small asteroids last */
-            populateCell(cell, SmallAsteroid, 1);
+            populateCell(cell, SmallAsteroid, asteroidCount);
         }
     }
 
     private void generateCells()
     {
-        Vector2 coordinates; 
+        Vector2 coordinates;
         for(int x = 0; x < MapWidth; x++)
         {
             for(int y = 0; y < MapHeight; y++)
@@ -77,11 +83,12 @@ public class MapGenerator : MonoBehaviour {
                 properties.CellCoordinates = coordinates;
 
                 /* Give it a random asteroid density (for now) */
-                properties.AsteroidDenstiy = Random.Range(0, 100);
+                properties.AsteroidDenstiy = Random.Range(0, 50);
 
                 /* Set random large and medium asteroid ratios */
                 properties.LargeAsteroidPercent = Random.Range(0, 100);
-                properties.MedAsteroidPercent = Random.Range(0, properties.LargeAsteroidPercent);
+
+                properties.MedAsteroidPercent = Random.Range(0, 100 - (int)(properties.LargeAsteroidPercent * 100));
 
                 /* Place the cell in the world space, save it to list */ 
                 newCell.transform.position = new Vector2(x * cellLength, y * cellLength);
@@ -98,14 +105,16 @@ public class MapGenerator : MonoBehaviour {
         int diameter; 
         Vector2 position;
         CircleCollider2D col = item.GetComponent<CircleCollider2D>();
+        float scale = item.transform.lossyScale.x;
+        float scaledRadius = col.radius * scale; 
         /* Get diameter of game object */
-        if(col.radius < 1.0f)
+        if(scaledRadius < 1.0f)
         {
             diameter = 1; 
         }
         else
         {
-            diameter = Mathf.CeilToInt(col.radius) * 2; 
+            diameter = Mathf.CeilToInt(col.radius * scale * 2); 
         }
 
         while (iteration < count)
@@ -116,12 +125,16 @@ public class MapGenerator : MonoBehaviour {
                 /* Find a random, relative x and y coordinate */
                 position.x = Random.Range(0, cellLength);
                 position.y = Random.Range(0, cellLength);
-
+                
             } while (!isSpaceFree((int)position.x, (int)position.y, diameter));
 
             /* Mark the spot as occupied */
             fillSpace((int)position.x, (int)position.y, diameter);
-            iteration++; 
+            iteration++;
+
+            /* offset the x and y axis by the radius of the object
+             * to ensure its anchored by the lower left position */
+            position += new Vector2(scaledRadius, scaledRadius);
 
             /* instantiate and place the asteroid */
             GameObject newItem = (GameObject)Instantiate(item);
@@ -165,18 +178,5 @@ public class MapGenerator : MonoBehaviour {
                 tracker[pos_x + i, pos_y + j] = true; 
             }
         }
-    }
-
-    private void drawCell(Vector3[] positions)
-    {
-        LineRenderer lr = gameObject.AddComponent<LineRenderer>();
-
-        lr.startColor = Color.black;
-        lr.endColor = Color.black;
-        lr.startWidth = 0.5f;
-        lr.endWidth = 0.5f;
-        lr.positionCount = 5;
-        lr.SetPositions(positions);
-        lr.useWorldSpace = true; 
     }
 }
