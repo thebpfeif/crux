@@ -3,9 +3,9 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
-    //public float RotateVelocity;
-    //public float forwardAccel;  
-    public Vector2 accel; 
+    public Vector2 Accel;
+    public float Dampener;
+    public float MaxVelocity;
 
     private Rigidbody2D rb2d;
 
@@ -33,24 +33,60 @@ public class PlayerMovement : MonoBehaviour {
         /* normalize since we only care about direction, not length */
         input = input.normalized;
 
-        /* calculate the thrust                     */
-        /* Thrust = mass * acceleration * direction */
-        thrust.x = (input.x * rb2d.mass * accel.x);
-        thrust.y = (input.y * rb2d.mass * accel.y);
+        if( input.x != 0)
+        {
+            /* calculate the thrust                     */
+            /* Thrust = mass * acceleration * direction */
+            thrust.x = (input.x * rb2d.mass * Accel.x);
 
-        /* calculate the change in momentum (impulse) to be applied */
-        /* momentum = mass * velocity */
-        impulse.y = (thrust.y * Time.deltaTime);
+            /* calculate the torque to be applied */
+            torque = (thrust.x * Time.deltaTime);
 
-        /* calculate the torque to be applied */
-        torque = (thrust.x * Time.deltaTime);
+            /* apply torque to the object */
+            rb2d.AddTorque(torque);
+        }
 
-        /* apply the impulse to the object */
-        rb2d.AddRelativeForce(impulse);
+        if (input.y != 0)
+        {
+            /* calculate the thrust                     */
+            /* Thrust = mass * acceleration * direction */
+            thrust.y = (input.y * rb2d.mass * Accel.y);
 
-        /* apply torque to the object */
-        rb2d.AddTorque(torque);
+            /* calculate the change in momentum (impulse) to be applied */
+            /* momentum = mass * velocity */
+            impulse.y = (thrust.y * Time.deltaTime);
 
+            /* apply the impulse to the object */
+            if( rb2d.velocity.y < MaxVelocity )
+            {
+            rb2d.AddRelativeForce(impulse);
+            }
+        }
+
+        /* If there's no player input, bring ship to a stop */
+        else if (rb2d.velocity.x != 0.0f || rb2d.velocity.y != 0.0f)
+        {
+            /* create a reductive force to slow down the ship */
+            thrust = (-rb2d.velocity * rb2d.mass * Dampener);
+
+            /* calculate the change in momentum (impulse) to be applied */
+            /* momentum = mass * velocity */
+            impulse = (thrust * Time.deltaTime);
+
+            /* apply the impulse to the object */
+            rb2d.AddForce(impulse * Time.deltaTime);
+
+            /* If the ship is within a certain threshold, 
+             * just bring it to a stop                    */
+            if (rb2d.velocity.x > -0.10 && rb2d.velocity.x < 0.10)
+            {
+                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
+            }
+            if (rb2d.velocity.y > -0.10 && rb2d.velocity.y < 0.10)
+            {
+                rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
+            }
+        }
     }
 
     public Vector2 getPosition()
@@ -70,7 +106,7 @@ public class PlayerMovement : MonoBehaviour {
     {
         if (collision.collider.tag == "Asteroid")
         {
-            DestroyObject(gameObject);
+            //DestroyObject(gameObject);
         }
     }
 }

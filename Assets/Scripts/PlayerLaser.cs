@@ -3,10 +3,11 @@ using System.Collections;
 
 public class PlayerLaser : MonoBehaviour {
 
+    public float BulletSpeed;
+
     private GameObject Playership;
     private Rigidbody2D rb2d; 
 
-    float speed_bullet;
     const float max_travel_dist = 20.0f;  
 
 	// Use this for initialization
@@ -14,7 +15,7 @@ public class PlayerLaser : MonoBehaviour {
     {
         Playership = GameObject.FindWithTag("PlayerShip");
         rb2d = GetComponent<Rigidbody2D>();
-        speed_bullet = 5.0f;     
+        BulletSpeed = 5.0f;     
 	}
 	
 	// Update is called once per frame
