@@ -3,10 +3,17 @@ using System.Collections;
 
 public class AsteroidCollision : MonoBehaviour {
 
-    public GameObject ItemDropGO; 
+    public GameObject ItemDropGO;
+    public GameObject player; 
+    public PlayerHealth playerHealth;
 
-	// Use this for initialization
-	void Start () {
+    private void Awake()
+    {
+        player = GameObject.FindGameObjectWithTag("PlayerShip");
+        playerHealth = player.GetComponent<PlayerHealth>(); 
+    }
+    // Use this for initialization
+    void Start () {
 	
 	}
 	
@@ -34,11 +41,16 @@ public class AsteroidCollision : MonoBehaviour {
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collider)
+    void OnCollisionEnter2D(Collision2D collision)
     {
+        if( collision.collider.tag == "PlayerShip" )
+        {
+            playerHealth.TakeDamage(10);
+        }
+        
         /* Get the collider velocity and mass it hit the astroid with */
-        Vector2 velocity = collider.rigidbody.velocity;
-        float mass = collider.rigidbody.mass;
+        Vector2 velocity = collision.rigidbody.velocity;
+        float mass = collision.rigidbody.mass;
 
         GetComponent<Rigidbody2D>().AddRelativeForce(velocity * mass);
 
