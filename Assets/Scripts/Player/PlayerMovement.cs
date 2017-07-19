@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour {
         /* local variables */
         Vector2 impulse;
         Vector2 thrust;
-        Vector2 input; 
+        Vector2 input;
         float torque;
 
         /* We don't apply an impulse along the horizontal, so zero it out */
@@ -57,10 +57,10 @@ public class PlayerMovement : MonoBehaviour {
             impulse.y = (thrust.y * Time.deltaTime);
 
             /* apply the impulse to the object */
-            if( rb2d.velocity.y < MaxVelocity )
-            {
             rb2d.AddRelativeForce(impulse);
-            }
+
+            /* Clamp to terminal velocity */
+            rb2d.velocity = Vector2.ClampMagnitude(rb2d.velocity, MaxVelocity);
         }
 
         /* If there's no player input, bring ship to a stop */
@@ -94,7 +94,12 @@ public class PlayerMovement : MonoBehaviour {
         return (transform.position);
     }
 
-    void OnTriggerEnter2D(Collider2D collider)
+    private void limitForce()
+    {
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Asteroid")
         {
