@@ -5,9 +5,9 @@ using UnityEngine;
 public class MapGenerator : MonoBehaviour {
 
     public  GameObject          CellGO;         /* Cell Prefab                  */
-    public  GameObject          LargeAsteroid;  /* Large Asteroid Prefab        */ 
-    public  GameObject          MedAsteroid;    /* Medium Asteroid Prefab       */
-    public  GameObject          SmallAsteroid;  /* Small Asteroid Prefab        */
+
+    public List<GameObject> SmallAsteroids;
+    
     public  int                 MapHeight;      /* Map height, in cells         */ 
     public  int                 MapWidth;       /* Map width, in cells          */
                                                 /* cell side length (square)    */
@@ -54,15 +54,15 @@ public class MapGenerator : MonoBehaviour {
             asteroidCount = Mathf.FloorToInt((properties.LargeAsteroidPercent * properties.AvailableCellCount) / largeAsteroidSize);
 
             /* populate with large asteroids first */
-            populateCell(cell, LargeAsteroid, asteroidCount);
+            //populateCell(cell, LargeAsteroid, asteroidCount);
             asteroidCount = Mathf.FloorToInt((properties.MedAsteroidPercent * properties.AvailableCellCount) / medAsteroidSize);
 
             /* populate with medium asteroids */
-            populateCell(cell, MedAsteroid, asteroidCount);
+            //populateCell(cell, MedAsteroid, asteroidCount);
             asteroidCount = Mathf.FloorToInt((properties.SmallAsteroidPercent * properties.AvailableCellCount) / smallAsteroidSize);
 
             /* small asteroids last */
-            populateCell(cell, SmallAsteroid, asteroidCount);
+            //populateCell(cell, SmallAsteroid, asteroidCount);
         }
     }
 
